@@ -1,0 +1,16 @@
+{
+  "name": "danmaku-stage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "stylus": "^0.54.5",
+    "typescript": "^3.2.2"
+  }
+}
