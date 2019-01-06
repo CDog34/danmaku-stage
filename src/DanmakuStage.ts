@@ -6,7 +6,8 @@ interface IDanmakuStageOptions {
 }
 
 interface IDanmakuRawItem {
-    content: string
+    content: string,
+    type?: 'left' | 'right' | 'center'
 }
 
 interface IDanmakuRail {
@@ -15,13 +16,23 @@ interface IDanmakuRail {
     center: DanmakuItemCenter | null
 }
 
+interface IDanmakuQueue {
+    left: IDanmakuRawItem[],
+    center: IDanmakuRawItem[],
+    right: IDanmakuRawItem[]
+}
+
 export class DanmakuStage {
     private cvs: HTMLCanvasElement = null
     private parentEle: HTMLElement = null
     private resizeTimer = null
     private lastTS: number = 0
     private state: 'ready' | 'running' = 'ready'
-    private dmks: IDanmakuRawItem[] = []
+    private dmks: IDanmakuQueue = {
+        left: [],
+        center: [],
+        right: []
+    }
     private railHeight: number = 30
     private renderStage: IDanmakuRail[] = []
 
@@ -45,7 +56,7 @@ export class DanmakuStage {
     }
 
     get queueLength () {
-        return this.dmks.length
+        return this.dmks.left.length + this.dmks.center.length + this.dmks.right.length
     }
 
     static purgeRail (rail: IDanmakuRail) {
@@ -63,7 +74,19 @@ export class DanmakuStage {
     }
 
     public appendDanmaku (dmk: IDanmakuRawItem) {
-        this.dmks.push(dmk)
+        switch (dmk.type) {
+            case 'left':
+                this.dmks.left.push(dmk)
+                break
+            case 'center':
+                this.dmks.center.push(dmk)
+                break
+            case 'right':
+                this.dmks.right.push(dmk)
+                break
+            default:
+                this.dmks.right.push(dmk)
+        }
     }
 
     public startRender () {
@@ -112,7 +135,7 @@ export class DanmakuStage {
         const now = Date.now()
         const secondDuration = (now - this.lastTS) / 1000
         this.lastTS = now
-        const disableBalance = this.dmks.length > 500
+        const disableBalance = this.queueLength > 500
         this.renderStage.forEach((rail, i) => {
             this.addDanmakuToRail(rail, i, disableBalance)
             this.calcRail(rail, secondDuration)
@@ -127,33 +150,24 @@ export class DanmakuStage {
     }
 
     private addDanmakuToRail (rail: IDanmakuRail, index: number, disableBalance: boolean = false) {
-        if (!this.dmks.length) {
-            return
-        }
-        if (disableBalance || rail.left.length === 0 || !rail[rail.left.length - 1].isMovingIn) {
-            const d = this.dmks.shift()
+        if (!!this.dmks.left.length && (disableBalance || rail.left.length === 0 || !rail[rail.left.length - 1].isMovingIn)) {
+            const d = this.dmks.left.shift()
             rail.left.push(new DanmakuItemLeft({
                 cvs: this.cvs,
                 content: d.content,
                 top: index * this.railHeight
             }))
         }
-        if (!this.dmks.length) {
-            return
-        }
-        if (disableBalance || rail.right.length === 0 || !rail[rail.right.length - 1].isMovingIn) {
-            const d = this.dmks.shift()
+        if (!!this.dmks.right.length && (disableBalance || rail.right.length === 0 || !rail[rail.right.length - 1].isMovingIn)) {
+            const d = this.dmks.right.shift()
             rail.right.push(new DanmakuItemRight({
                 cvs: this.cvs,
                 content: d.content,
                 top: index * this.railHeight
             }))
         }
-        if (!this.dmks.length) {
-            return
-        }
-        if (!rail.center) {
-            const d = this.dmks.shift()
+        if (!!this.dmks.center.length && !rail.center) {
+            const d = this.dmks.center.shift()
             rail.center = new DanmakuItemCenter({
                 cvs: this.cvs,
                 content: d.content,

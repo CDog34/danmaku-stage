@@ -7,7 +7,9 @@ function main () {
         listenResize: true
     })
     stage.startRender()
-    stage.appendDanmaku({ content: '我就是你们要见的网友' })
+    stage.appendDanmaku({ content: '我在右边', type: 'right' })
+    stage.appendDanmaku({ content: '我在中间', type: 'center' })
+    stage.appendDanmaku({ content: '我在左边', type: 'left' })
     window['s'] = stage
     setInterval(() => {
         document.getElementById('jy').innerText = `队列积压：${stage.queueLength}`
