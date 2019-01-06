@@ -1,4 +1,4 @@
-import { DanmakuItemCenter, DanmakuItemLeft, DanmakuItemRight } from './danmakus/DanmakuItem'
+import { DanmakuItemCenter, DanmakuItemLeft, DanmakuItemRight } from './DanmakuItem'
 
 interface IDanmakuStageOptions {
     parentElement: HTMLElement,
