@@ -150,7 +150,7 @@ export class DanmakuStage {
     }
 
     private addDanmakuToRail (rail: IDanmakuRail, index: number, disableBalance: boolean = false) {
-        if (!!this.dmks.left.length && (disableBalance || rail.left.length === 0 || !rail[rail.left.length - 1].isMovingIn)) {
+        if (!!this.dmks.left.length && (disableBalance || rail.left.length === 0 || !rail.left[rail.left.length - 1].isMovingIn)) {
             const d = this.dmks.left.shift()
             rail.left.push(new DanmakuItemLeft({
                 cvs: this.cvs,
@@ -158,7 +158,7 @@ export class DanmakuStage {
                 top: index * this.railHeight
             }))
         }
-        if (!!this.dmks.right.length && (disableBalance || rail.right.length === 0 || !rail[rail.right.length - 1].isMovingIn)) {
+        if (!!this.dmks.right.length && (disableBalance || rail.right.length === 0 || !rail.right[rail.right.length - 1].isMovingIn)) {
             const d = this.dmks.right.shift()
             rail.right.push(new DanmakuItemRight({
                 cvs: this.cvs,
